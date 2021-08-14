@@ -3,12 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Entity\Image;
 use App\Form\PostType;
 use App\Repository\PostRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/post")
@@ -35,6 +36,21 @@ class PostController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $images = $form->get('image')->getData();
+            foreach($images as $image){
+                // génère un nouveau nom du fichier
+                $file = md5(uniqid()) . '.' . $image->guessExtension();
+                // copier l'image dans le dossier uploads
+                $image->move(
+                    $this->getParameter('images_directory'),
+                    $file
+                );
+                // stocker le nom de l'image dans la bdd
+                $img = new Image();
+                $img->setName($file);
+                $post->addImage($img);
+
+            }
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($post);
             $entityManager->flush();
@@ -67,6 +83,21 @@ class PostController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $images = $form->get('image')->getData();
+            foreach($images as $image){
+                // génère un nouveau nom du fichier
+                $file = md5(uniqid()) . '.' . $image->guessExtension();
+                // copier l'image dans le dossier uploads
+                $image->move(
+                    $this->getParameter('images_directory'),
+                    $file
+                );
+                // stocker le nom de l'image dans la bdd
+                $img = new Image();
+                $img->setName($file);
+                $post->addImage($img);
+
+            }
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('post_index', [], Response::HTTP_SEE_OTHER);
