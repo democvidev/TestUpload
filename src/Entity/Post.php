@@ -35,7 +35,7 @@ class Post
     private $content;
 
     /**
-     * @ORM\OneToMany(targetEntity=Image::class, mappedBy="post", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Image::class, mappedBy="post", orphanRemoval=true, cascade={"persist"})
      */
     private $images;
 
